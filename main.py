@@ -24,6 +24,13 @@ db = MySQL(app)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    if not session.get('successfullogin'):
+        return landing()
+    else:
+        return login()
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
     if request.method == 'POST':
         if ('username' in request.form) and ('password' in request.form):
             username = request.form['username']

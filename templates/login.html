@@ -1,24 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="UTF-8"
-        <title>Login</title>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Sign in</title>
     </head>
+
     <body>
-        <div>
-            <form action="" method="POST">
-                <label>USERNAME</label><br>
-                <input name="username" type="email" placeholder="Type your username"><br>
-                <label>PASSWORD</label><br>
-                <input name="password" type="password" placeholder="Type your password"><br>
-                <input type="submit" value="LOGIN"><br>
+        <div class="main">
+            <p class="sign" align="center">Sign In</p>
+            <form class="form1" action="" method="POST">
+                <input class="un" align="center" name="username" type="email" placeholder="Type your username"><br>
+                <input class="pass" align="center" name="password" type="password" placeholder="Type your password"><br>
+                <input class="submit" align="center" type="submit" value="SUBMIT"><br>
             </form>
-        </div>
-        <div>
-            <form action="/register">
-                <label>New User?</label>
-                <input value="Register" type="submit">
-            </form>
+            <br>
+            <p class="link" align="center"><a href="/register">New User?</p>
         </div>
     </body>
 </html>

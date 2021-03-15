@@ -2,19 +2,23 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Register</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
+        <title>New User Registeration</title>
     </head>
+
     <body>
-        <div>
+        <div class="main">
             <form method="POST">
-                <label>Full Name</label><br>
-                <input type="text" name="name" id="name"><br><br>
-                <label>Email Address</label><br>
-                <input type="email" name="email" id="email"><br><br>
-                <label>Password</label><br>
-                <input type="password" name="password" id="password"><br><br>
-                <input type="submit" name="Sign Up"><br>
+                <p class="sign" align="center">Sign Up</p>
+                <input class="un" align="center" type="text" name="name" id="name" placeholder="Type your name"><br>
+                <input class="un" align="center" type="email" name="email" id="email" placeholder="Type your email"><br>
+                <input class="pass" align="center" type="password" name="password" id="password" placeholder="Type your password"><br>
+                <input class="submit" align="center" type="submit" name="register" value="SUBMIT"><br>
             </form>
+            <p class="link" align="center">Already have an account? <a href="/">Sign In</p>
         </div>
     </body>
 </html>
