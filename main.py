@@ -1,36 +1,27 @@
-import os
 from flask import Flask, render_template, redirect, session, url_for, request, flash
 import MySQLdb
 from flask_mysqldb import MySQL
 import hashlib, uuid
-from dotenv import load_dotenv
-
-#load_dotenv() will first look for a .env file and if it finds one, 
-# it will load the environment variables from the file and make them 
-# accessible to your project like any other environment variable would be.
-load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = '12345'
 
-# Configure Flask app
-app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST')
-app.config['MYSQL_USER'] = os.getenv('MYSQL_USER')
-app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD')
-app.config['MYSQL_DB'] = os.getenv('MYSQL_DB')
+# Configure Flask app using config.py
+app.config.from_object('config.Config')
 
 # Making connection to MySQL database
 db = MySQL(app)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    if not session.get('successfullogin'):
+    if 'userID' in session:
         return landing()
     else:
         return login()
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if 'userID' in session:
+        return landing()
     if request.method == 'POST':
         if ('username' in request.form) and ('password' in request.form):
             username = request.form['username']
@@ -44,7 +35,7 @@ def login():
                     hashed_password = credentials['password']
                     salt = credentials['salt']
                     if hashed_password == hashlib.sha512(str(password + salt).encode('utf-8')).hexdigest():
-                        session['successfullogin'] = True
+                        session['userID'] = credentials['id']
                         return landing()
                     else:
                         return 'Unsuccessful Login'
@@ -72,8 +63,15 @@ def register():
 
 @app.route('/landing')
 def landing():
-    if session['successfullogin']:
+    if 'userID' in session:
         return render_template('landing.html')
+    else:
+        return login()
+
+@app.route('/logout')
+def logout():
+    session.pop('userID', None)
+    return index()
 
 if __name__ == '__main__':
     app.run(debug=True)
