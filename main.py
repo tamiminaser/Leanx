@@ -28,7 +28,7 @@ def login():
             password = request.form['password']
             # Now, let's define a cursor to execute command on our MySQL database
             cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
-            cursor.execute('SELECT * FROM logininfo WHERE email=%s', [username])
+            cursor.execute('SELECT * FROM login WHERE email=%s', [username])
             credentials = cursor.fetchone()
             if credentials is not None:
                 if (credentials['email']==username):
@@ -64,9 +64,9 @@ def register():
             hashed_password = hashlib.sha512(str(password + salt).encode('utf-8')).hexdigest()
             # Now, let's define a cursor to execute command on our MySQL database
             cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
-            cursor.execute('INSERT INTO logininfo (name, email, password, salt) VALUES (%s, %s, %s, %s)', (name, email, hashed_password, salt))
+            cursor.execute('INSERT INTO login (name, email, password, salt) VALUES (%s, %s, %s, %s)', (name, email, hashed_password, salt))
             db.connection.commit()
-            cursor.execute('SELECT id FROM logininfo WHERE email=%s AND password=%s', (email, hashed_password))
+            cursor.execute('SELECT id FROM login WHERE email=%s AND password=%s', (email, hashed_password))
             user_id = cursor.fetchone()['id']
             cursor.execute('INSERT INTO profile (user_id, name, email) VALUES (%s, %s, %s)', (user_id, name, email))
             db.connection.commit()
