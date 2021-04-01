@@ -8,10 +8,31 @@
         <title>Your Account</title>
     </head>
     <body>
-        <div>
-            <h1>Your Account</h1>
+        <div class="profile">
+            <p class="sign" align="center">Welcome {{ data.name }} </p>
+            <p align="center">
+            <img class="profile_img" src="{{ url_for('static', filename=data.profile_pic) }}">
+            </p>
+            <p class="profile_items" align="center">{{ data.occupation }}</p>
+            <p class="profile_items" align="center">{{ data.location }}</p>
+            <p class="profile_items" align="center">{{ data.email }}</p>
+            <br><br>
+
+            <form class="form1" action="" method="POST">
+                <textarea class="message_form" align="center" name="message" type="text" placeholder="Type your message"></textarea>
+                <br>
+                <input class="submit" align="center" type="submit" value="POST"><br>
+            </form>
+
+            {% for msg in data.messages %}
+                <div class="message_box">
+                    <img class="message_img" src="{{ url_for('static', filename=msg.profile_pic) }}"> 
+                    <p class="message_username">{{msg.name}}</p>
+                    <p class="message_content">{{msg.message}}</p>
+                </div>
+            {% endfor %}
             <form action="/logout">
-                <button type="submit">Log Out</button>
+                <button class="submit" align="center" type="submit">Log Out</button>
             </form>
         </div>
     </body>

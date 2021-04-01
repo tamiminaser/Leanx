@@ -14,14 +14,14 @@ db = MySQL(app)
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if 'userID' in session:
-        return landing()
+        return redirect(url_for('landing'))
     else:
-        return login()
+        return redirect(url_for('login'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if 'userID' in session:
-        return landing()
+        return  redirect(url_for('landing'))
     if request.method == 'POST':
         if ('username' in request.form) and ('password' in request.form):
             username = request.form['username']
@@ -36,7 +36,15 @@ def login():
                     salt = credentials['salt']
                     if hashed_password == hashlib.sha512(str(password + salt).encode('utf-8')).hexdigest():
                         session['userID'] = credentials['id']
-                        return landing()
+                        session['name'] = credentials['name']
+                        cursor.execute('SELECT * FROM profile WHERE user_id=%s', [credentials['id']])
+                        profile = cursor.fetchone()
+                        session['profile_pic'] = profile['profile_pic']
+                        session['occupation'] = profile['occupation']
+                        session['location'] = profile['location']
+                        session['email'] = profile['email']
+
+                        return redirect(url_for('landing')) 
                     else:
                         return 'Unsuccessful Login'
                 else:
@@ -58,20 +66,39 @@ def register():
             cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('INSERT INTO logininfo (name, email, password, salt) VALUES (%s, %s, %s, %s)', (name, email, hashed_password, salt))
             db.connection.commit()
-            return index()
+            cursor.execute('SELECT id FROM logininfo WHERE email=%s AND password=%s', (email, hashed_password))
+            user_id = cursor.fetchone()['id']
+            cursor.execute('INSERT INTO profile (user_id, name, email) VALUES (%s, %s, %s)', (user_id, name, email))
+            db.connection.commit()
+            return  redirect(url_for('index'))
     return render_template('register.html')
 
-@app.route('/landing')
+@app.route('/landing', methods=['GET', 'POST'])
 def landing():
     if 'userID' in session:
-        return render_template('landing.html')
+        if request.method == 'POST':
+            user_id = session['userID']
+            message = request.form['message']
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+            cursor.execute('INSERT INTO messages (user_id,message) VALUES (%s, %s)', (user_id, message))
+            db.connection.commit()
+        cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('SELECT profile.name, profile.profile_pic, messages.message, messages.time_stamp FROM messages JOIN profile ON messages.user_id = profile.user_id;')
+        messages = cursor.fetchall()
+        data = {'name': session['name'], 
+                'profile_pic': session['profile_pic'],
+                'occupation': session['occupation'],
+                'location': session['location'], 
+                'email': session['email'],
+                'messages': messages}
+        return render_template('landing.html', data=data)
     else:
-        return login()
+        return redirect(url_for('index'))
 
 @app.route('/logout')
 def logout():
     session.pop('userID', None)
-    return index()
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(debug=True)
