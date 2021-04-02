@@ -73,15 +73,9 @@ def register():
             return  redirect(url_for('index'))
     return render_template('register.html')
 
-@app.route('/landing', methods=['GET', 'POST'])
+@app.route('/landing', methods=['GET'])
 def landing():
     if 'userID' in session:
-        if request.method == 'POST':
-            user_id = session['userID']
-            message = request.form['message']
-            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
-            cursor.execute('INSERT INTO messages (user_id,message) VALUES (%s, %s)', (user_id, message))
-            db.connection.commit()
         cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute('SELECT profile.name, profile.profile_pic, messages.message, messages.time_stamp FROM messages JOIN profile ON messages.user_id = profile.user_id;')
         messages = cursor.fetchall()
@@ -95,10 +89,23 @@ def landing():
     else:
         return redirect(url_for('index'))
 
+@app.route('/landing', methods=['POST'])
+def posting():
+    if 'userID' in session:
+        if request.method == 'POST':
+            user_id = session['userID']
+            message = request.form['message']
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+            cursor.execute('INSERT INTO messages (user_id,message) VALUES (%s, %s)', (user_id, message))
+            db.connection.commit()
+        return render_template('landing.html', data=data)
+    else:
+        return redirect(url_for('index'))
+
 @app.route('/logout')
 def logout():
     session.pop('userID', None)
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80)
+    app.run(host='0.0.0.0', port=5000)
