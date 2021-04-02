@@ -95,7 +95,7 @@ def landing():
     if 'userID' in session:
         refresh_profile_info()
         cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT profile.name, profile.profile_pic, messages.message, messages.time_stamp FROM messages JOIN profile ON messages.user_id = profile.user_id;')
+        cursor.execute('SELECT profile.name, profile.profile_pic, messages.message, messages.time_stamp FROM messages JOIN profile ON messages.user_id = profile.user_id ORDER BY messages.id;')
         messages = cursor.fetchall()
         data = {'name': session['name'], 
                 'profile_pic': session['profile_pic'],
