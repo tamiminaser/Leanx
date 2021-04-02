@@ -1,9 +1,14 @@
+import os
 from flask import Flask, render_template, redirect, session, url_for, request, flash
 import MySQLdb
 from flask_mysqldb import MySQL
 import hashlib, uuid
+import random
 
 app = Flask(__name__)
+app.config['UPLOAD_PATH'] = './static/img/'
+app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024
+app.config['UPLOAD_EXTENSIONS'] = ['.jpg', '.png', '.jfif']
 
 # Configure Flask app using config.py
 app.config.from_object('config.Config')
@@ -73,9 +78,21 @@ def register():
             return  redirect(url_for('index'))
     return render_template('register.html')
 
-@app.route('/landing', methods=['GET'])
+def refresh_profile_info():
+    if 'userID' in session:
+        cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('SELECT name, email, profile_pic, occupation, location FROM profile WHERE user_id = %s', [session['userID']])
+        profile_info = cursor.fetchone()
+        session['name'] = profile_info['name']
+        session['email'] = profile_info['email']
+        session['profile_pic'] = profile_info['profile_pic']
+        session['occupation'] = profile_info['occupation']
+        session['location'] = profile_info['location']
+
+@app.route('/landing')
 def landing():
     if 'userID' in session:
+        refresh_profile_info()
         cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute('SELECT profile.name, profile.profile_pic, messages.message, messages.time_stamp FROM messages JOIN profile ON messages.user_id = profile.user_id;')
         messages = cursor.fetchall()
@@ -102,10 +119,38 @@ def posting():
     else:
         return redirect(url_for('index'))
 
+@app.route('/settings')
+def settings():
+    return render_template('settings.html')
+
+@app.route('/settings', methods=['POST'])
+def upload_and_record():
+    if 'userID' in session:
+        cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+        user_id = session['userID']
+        uploaded_file = request.files['file']
+        if uploaded_file.filename != '':
+            _, image_file_extension = os.path.splitext(uploaded_file.filename)
+            img_filename = str(random.getrandbits(64))+image_file_extension
+            img_path = 'img/'+img_filename
+            uploaded_file.save('./static/'+img_path)
+            cursor.execute('UPDATE profile SET profile_pic = %s WHERE user_id = %s', (img_path, user_id))
+            db.connection.commit()
+        location = request.form['location']
+        occupation = request.form['occupation']
+        cursor.execute('UPDATE profile SET location = %s, occupation = %s WHERE user_id = %s', (location, occupation, user_id))
+        db.connection.commit()
+    return redirect(url_for('landing'))
+
+
 @app.route('/logout')
 def logout():
     session.pop('userID', None)
     return redirect(url_for('index'))
 
+
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    # Comment or uncomment based on whether you need dev mode or prod mode.
+    app.run(debug=True)
+    #app.run(host='0.0.0.0', port=5000)

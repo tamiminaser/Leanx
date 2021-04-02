@@ -11,11 +11,14 @@
         <div class="profile">
             <p class="sign" align="center">Welcome {{ data.name }} </p>
             <p align="center">
-            <img class="profile_img" src="{{ url_for('static', filename=data.profile_pic) }}">
+            <a href="/settings"><img class="profile_img" src="{{ url_for('static', filename=data.profile_pic) }}"></a>
             </p>
             <p class="profile_items" align="center">{{ data.occupation }}</p>
             <p class="profile_items" align="center">{{ data.location }}</p>
             <p class="profile_items" align="center">{{ data.email }}</p>
+            <div>
+                <p class="link" align="center"><a href="/settings">Settings</a></p>
+            </div>
             <br><br>
 
             <form class="form1" action="" method="POST">
