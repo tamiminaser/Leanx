@@ -151,6 +151,7 @@ def logout():
 
 
 if __name__ == '__main__':
+    session.clear()
     # Comment or uncomment based on whether you need dev mode or prod mode.
-    app.run(debug=True)
-    #app.run(host='0.0.0.0', port=5000)
+    #app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
