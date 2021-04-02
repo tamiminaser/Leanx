@@ -95,7 +95,7 @@ def landing():
     if 'userID' in session:
         refresh_profile_info()
         cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT profile.name, profile.profile_pic, messages.message, messages.time_stamp FROM messages JOIN profile ON messages.user_id = profile.user_id ORDER BY messages.id;')
+        cursor.execute('SELECT profile.user_id, profile.name, profile.profile_pic, messages.message, messages.time_stamp FROM messages JOIN profile ON messages.user_id = profile.user_id ORDER BY messages.id;')
         messages = cursor.fetchall()
         data = {'name': session['name'], 
                 'profile_pic': session['profile_pic'],
@@ -142,6 +142,20 @@ def upload_and_record():
         cursor.execute('UPDATE profile SET location = %s, occupation = %s WHERE user_id = %s', (location, occupation, user_id))
         db.connection.commit()
     return redirect(url_for('landing'))
+
+
+@app.route('/profile', methods=['GET'])
+def profile():
+    if 'userID' in session:
+        cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('SELECT name, email, profile_pic, occupation, location FROM profile WHERE user_id = %s', [request.args['user_id']])
+        profile_info = cursor.fetchone()
+        data = {'name': profile_info['name'], 
+                'profile_pic': profile_info['profile_pic'],
+                'occupation': profile_info['occupation'],
+                'location': profile_info['location'], 
+                'email': profile_info['email']}
+    return render_template('profile.html', data=data)
 
 
 @app.route('/logout')

@@ -29,7 +29,7 @@
 
             {% for msg in data.messages %}
                 <div class="message_box">
-                    <img class="message_img" src="{{ url_for('static', filename=msg.profile_pic) }}"> 
+                    <a href="/profile?user_id={{msg.user_id}}"><img class="message_img" src="{{ url_for('static', filename=msg.profile_pic) }}"></a> 
                     <p class="message_username">{{msg.name}}</p>
                     <p class="message_content">{{msg.message}}</p>
                 </div>
