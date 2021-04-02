@@ -98,7 +98,7 @@ def posting():
             cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('INSERT INTO messages (user_id,message) VALUES (%s, %s)', (user_id, message))
             db.connection.commit()
-        return render_template('landing.html', data=data)
+        return redirect(url_for('landing'))
     else:
         return redirect(url_for('index'))
 
