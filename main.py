@@ -33,7 +33,7 @@ def login():
             password = request.form['password']
             # Now, let's define a cursor to execute command on our MySQL database
             cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
-            cursor.execute('SELECT * FROM login WHERE email=%s', [username])
+            cursor.execute('SELECT * FROM user WHERE email=%s', [username])
             credentials = cursor.fetchone()
             if credentials is not None:
                 if (credentials['email']==username):
@@ -62,6 +62,7 @@ def login():
 def register():
     if request.method == 'POST':
         if 'name' in request.form and 'email' in request.form and 'password' in request.form:
+            user_id = str(random.getrandbits(128))
             name = request.form['name']
             email = request.form['email']
             password = request.form['password']
@@ -69,9 +70,9 @@ def register():
             hashed_password = hashlib.sha512(str(password + salt).encode('utf-8')).hexdigest()
             # Now, let's define a cursor to execute command on our MySQL database
             cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
-            cursor.execute('INSERT INTO login (name, email, password, salt) VALUES (%s, %s, %s, %s)', (name, email, hashed_password, salt))
+            cursor.execute('INSERT INTO user (id, name, email, password, salt) VALUES (%s, %s, %s, %s, %s)', (user_id, name, email, hashed_password, salt))
             db.connection.commit()
-            cursor.execute('SELECT id FROM login WHERE email=%s AND password=%s', (email, hashed_password))
+            cursor.execute('SELECT id FROM user WHERE email=%s AND password=%s', (email, hashed_password))
             user_id = cursor.fetchone()['id']
             cursor.execute('INSERT INTO profile (user_id, name, email) VALUES (%s, %s, %s)', (user_id, name, email))
             db.connection.commit()
@@ -152,5 +153,5 @@ def logout():
 
 if __name__ == '__main__':
     # Comment or uncomment based on whether you need dev mode or prod mode.
-    #app.run(debug=True)
-    app.run(host='0.0.0.0', port=5000)
+    app.run(debug=True)
+    #app.run(host='0.0.0.0', port=5000)

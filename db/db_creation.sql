@@ -2,27 +2,28 @@ CREATE DATABASE leanx;
 
 USE leanx;
 
-CREATE TABLE login (
- id INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE user (
+ id VARCHAR(256) PRIMARY KEY NOT NULL,
     name VARCHAR(45) NOT NULL,
     email VARCHAR(45) UNIQUE NOT NULL,
     password VARCHAR(128) NOT NULL,
-    salt VARCHAR(32) NOT NULL
+    salt VARCHAR(32) NOT NULL,
+	member_since TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE profile (
 	id INT AUTO_INCREMENT PRIMARY KEY,
-	user_id INT NOT NULL,
-	name varchar(45)  NOT NULL,
-	email varchar(45) NOT NULL,
-	profile_pic varchar(200) NOT NULL DEFAULT './img/no_pic.jpg', 
-	occupation varchar(45) NULL, 
-	location varchar(45) NULL
+	user_id VARCHAR(256) NOT NULL,
+	name VARCHAR(45)  NOT NULL,
+	email VARCHAR(45) NOT NULL,
+	profile_pic VARCHAR(256) NOT NULL DEFAULT './img/no_pic.jpg', 
+	occupation VARCHAR(45) NULL, 
+	location VARCHAR(45) NULL
 );
 
 CREATE TABLE messages (
 	id INT AUTO_INCREMENT PRIMARY KEY,
-	user_id INT NOT NULL,
-	message varchar(250),
-	time_stamp timestamp DEFAULT CURRENT_TIMESTAMP
+	user_id VARCHAR(256) NOT NULL,
+	message VARCHAR(256),
+	time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
