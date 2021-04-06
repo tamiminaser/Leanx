@@ -18,12 +18,14 @@ CREATE TABLE profile (
 	email VARCHAR(45) NOT NULL,
 	profile_pic VARCHAR(256) NOT NULL DEFAULT './img/no_pic.jpg', 
 	occupation VARCHAR(45) NULL, 
-	location VARCHAR(45) NULL
+	location VARCHAR(45) NULL,
+	FOREIGN KEY (user_id) REFERENCES user(id)
 );
 
 CREATE TABLE messages (
 	id INT AUTO_INCREMENT PRIMARY KEY,
 	user_id VARCHAR(256) NOT NULL,
 	message VARCHAR(256),
-	time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+	time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	FOREIGN KEY (user_id) REFERENCES user(id)
 );
