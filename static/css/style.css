@@ -176,6 +176,36 @@ a {
     padding-left: 10px;
 }
 
+.file {
+    opacity: 0;
+    width: 0.1px;
+    height: 0.1px;
+    position: absolute;
+  }
+
+.file-input label {
+
+    cursor: pointer;
+    border-radius: 5em;
+    color: #fff;
+    background: linear-gradient(to right, #9C27B0, #E040FB);
+    border: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-top: 10px;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 13px;
+    box-shadow: 0 0 20px 1px rgba(0, 0, 0, 0.04);
+    width: 200px;
+    height: 20px;
+    display: block;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform .2s ease-out;
+  }
 
 @media (max-width: 600px) {
     .main {
